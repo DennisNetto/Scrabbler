@@ -5,9 +5,6 @@ import itertools
 import nltk
 from nltk.corpus import words
 
-# Ensure you have the word list downloaded
-nltk.download("words")
-word_list = set(words.words())  # Load words from nltk
 
 def con_to():
     # Connect to Twitch IRC
@@ -19,10 +16,6 @@ def con_to():
     time.sleep(1)  # Give it a second to connect
     return sock
 
-def find_words(letters, length):
-    possible_words = (''.join(p) for p in itertools.product(letters, repeat=length))
-    return [word for word in possible_words if word in word_list]
-
 
 # Send a message
 def send_message(message):
@@ -31,7 +24,23 @@ def send_message(message):
     sock.send(message.encode("utf-8"))
 
 
-# Example: 6-letter words using only 'x', 'o', and 'r'
-# print(find_words("thean", 4))
-send_message("we playing")  # Example message
+def find_words(letters, length):
+    possible_words = (''.join(p) for p in itertools.product(letters, repeat=length))
+    return [word for word in possible_words if word in word_list]
 
+kill = 0
+while True:
+    try:
+        # Example: 6-letter words using only 'x', 'o', and 'r'
+        print(find_words("thean", 4))
+        # send_message("we playing")  # Example message
+        break
+
+    except NameError:
+        # Ensure you have the word list downloaded
+        nltk.download("words")
+        word_list = set(words.words())  # Load words from nltk
+        if kill == 1:
+            break
+        else:
+            kill = 1
