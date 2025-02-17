@@ -25,22 +25,30 @@ def send_message(message):
 
 
 def find_words(letters, length):
+    exclude_words = {"that", "then", "thee", "than"}
     possible_words = (''.join(p) for p in itertools.product(letters, repeat=length))
-    return [word for word in possible_words if word in word_list]
+    return [word for word in possible_words if word in word_list and word not in exclude_words]
+
+
 
 kill = 0
 while True:
     try:
+        word_list = set(words.words())
         # Example: 6-letter words using only 'x', 'o', and 'r'
-        print(find_words("thean", 4))
+        found_words = find_words("thean", 4)
+        # limits returned words by X ammount.
+        limited_words = list(itertools.islice(found_words, 3))
+        print(limited_words)
         # send_message("we playing")  # Example message
         break
 
-    except NameError:
+    except (NameError, LookupError):
         # Ensure you have the word list downloaded
         nltk.download("words")
         word_list = set(words.words())  # Load words from nltk
         if kill == 1:
+            print("Error downloading word list.")
             break
         else:
             kill = 1
