@@ -25,7 +25,7 @@ def send_message(message):
     sock.send(message.encode("utf-8"))
 
 
-def find_words(letters, length):
+def find_words(letters, length, number):
     # Define the letters, valid words list, and words to exclude
     exclude_words = {"tort", "taro", "tarr"}  # Words to exclude
 
@@ -51,7 +51,7 @@ def find_words(letters, length):
     valid_words = [word for word in possible_words if is_valid(word)]
 
     # Randomly select X words (only if there are enough valid words)
-    random_words = random.sample(valid_words, min(12, len(valid_words)))
+    random_words = random.sample(valid_words, min(number, len(valid_words)))
     return random_words
 
 
@@ -60,14 +60,12 @@ kill = 0
 while True:
     try:
         word_list = set(words.words())
-        # Example: 6-letter words using only 'x', 'o', and 'r'
-        found_words = find_words("crottra", 4)
+        # Example: box:1 is letters, two is length, and three is number of returned words.
+        found_words = find_words("evcrol", 4, 8)
         # limits returned words by X amount.
-        limited_words = list(itertools.islice(found_words, 8))
-        for f in limited_words:
-            print(f)
-            # send_message(f)
-            # time.sleep(3)
+        for f in found_words:
+            send_message(f)
+            time.sleep(15)
         # send_message("we playing")  # Example message
         break
 
