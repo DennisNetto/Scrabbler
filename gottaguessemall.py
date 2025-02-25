@@ -4,8 +4,21 @@ import time
 import itertools
 import nltk
 import random
+import subprocess
+import platform
+from os import system, name
+import string
 from nltk.corpus import words
 
+# Uses the operating system to define the method of clearing the shell.
+def clear():
+    operatingsys = platform.system()
+    if operatingsys == "Windows":
+        if name == 'nt':
+            _ = system('cls')
+
+    else:
+        subprocess.run("clear", shell=True)
 
 def con_to():
     # Connect to Twitch IRC
@@ -19,15 +32,14 @@ def con_to():
 
 
 # Send a message
-def send_message(message):
-    sock = con_to()
+def send_message(message, sock):
     message = f"PRIVMSG {config.CHANNEL} :{message}\n"
     sock.send(message.encode("utf-8"))
 
 
 def find_words(letters, length, number):
     # Define the letters, valid words list, and words to exclude
-    exclude_words = {"tort", "taro", "tarr"}  # Words to exclude
+    exclude_words = {}  # Words to exclude
 
     # Count occurrences of each letter in the given set
     letter_counts = {char: letters.count(char) for char in set(letters)}
@@ -47,6 +59,7 @@ def find_words(letters, length, number):
         word_counts = {char: word.count(char) for char in set(word)}
         return all(word_counts[char] <= letter_counts.get(char, 0) for char in word_counts)
 
+
     # Filter valid words
     valid_words = [word for word in possible_words if is_valid(word)]
 
@@ -59,17 +72,29 @@ def find_words(letters, length, number):
 kill = 0
 while True:
     try:
+        print("enter the letters you have (no spaces)")
+        letters = str(input())
+        clear()
+        print("enter the length of the word")
+        length = int(input())
+        clear()
+        print("enter the number of results you want")
+        num_results = int(input())
+        clear()
+        # sets the word list and connects to twitch.
+        sock = con_to()
         word_list = set(words.words())
         # Example: box:1 is letters, two is length, and three is number of returned words.
-        found_words = find_words("evcrol", 4, 8)
+        found_words = find_words(letters, length, num_results)
         # limits returned words by X amount.
+        print("Results:")
         for f in found_words:
-            send_message(f)
-            time.sleep(15)
-        # send_message("we playing")  # Example message
+            print(f)
+            # send_message(f, sock)
+            # time.sleep(15)
         break
 
-    except (NameError, LookupError):
+    except (NameError, LookupError, ValueError):
         # Ensure you have the word list downloaded
         nltk.download("words")
         word_list = set(words.words())  # Load words from nltk
