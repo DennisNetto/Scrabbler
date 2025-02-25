@@ -1,13 +1,10 @@
-import config
-import socket
-import time
 import itertools
 import nltk
 import random
 import subprocess
 import platform
 from os import system, name
-import string
+
 from nltk.corpus import words
 
 # Uses the operating system to define the method of clearing the shell.
@@ -20,32 +17,16 @@ def clear():
     else:
         subprocess.run("clear", shell=True)
 
-def con_to():
-    # Connect to Twitch IRC
-    sock = socket.socket()
-    sock.connect((config.SERVER, config.PORT))
-    sock.send(f"PASS {config.TOKEN}\n".encode("utf-8"))
-    sock.send(f"NICK {config.NICKNAME}\n".encode("utf-8"))
-    sock.send(f"JOIN {config.CHANNEL}\n".encode("utf-8"))
-    time.sleep(1)  # Give it a second to connect
-    return sock
 
-
-# Send a message
-def send_message(message, sock):
-    message = f"PRIVMSG {config.CHANNEL} :{message}\n"
-    sock.send(message.encode("utf-8"))
-
-
-def find_words(letters, length, number):
+def find_words(letter, lengths, number):
     # Define the letters, valid words list, and words to exclude
     exclude_words = {}  # Words to exclude
 
     # Count occurrences of each letter in the given set
-    letter_counts = {char: letters.count(char) for char in set(letters)}
+    letter_counts = {char: letter.count(char) for char in set(letter)}
 
     # Generate all possible 6-letter combinations
-    possible_words = (''.join(p) for p in itertools.permutations(letters, length))  # Use permutations to avoid repeats
+    possible_words = (''.join(p) for p in itertools.permutations(letter, lengths))  # Use permutations to avoid repeats
 
     # Function to check if word follows letter constraints
     def is_valid(word):
@@ -81,8 +62,6 @@ while True:
         print("enter the number of results you want")
         num_results = int(input())
         clear()
-        # sets the word list and connects to twitch.
-        sock = con_to()
         word_list = set(words.words())
         # Example: box:1 is letters, two is length, and three is number of returned words.
         found_words = find_words(letters, length, num_results)
